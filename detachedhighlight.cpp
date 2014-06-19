@@ -1,7 +1,6 @@
 /*
 * detachedhighlight.cpp
-* Receive highlights upon being detached from a channel in ZNC.
-*
+* Forwards notices containing any highlights received in detached channels.
 * Copyright (C) Luke Slater (reality) <tinmachin3@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -42,6 +41,8 @@ public:
             m_pUser->PutStatusNotice("#" + channel.GetName() + " <" +
                 nick.GetNick() + "> " + sMessage);
         }
+
+        return CONTINUE;
     }
 };
 
