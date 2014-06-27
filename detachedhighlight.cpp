@@ -25,7 +25,6 @@
 #include <znc/IRCNetwork.h>
 #include <znc/User.h>
 #include <znc/Chan.h>
-#include <pcrecpp.h>
 
 class CDetachedHighlight : public CModule {
 
@@ -35,15 +34,18 @@ public:
 
     virtual EModRet OnChanMsg(CNick& nick, CChan& channel, CString& sMessage) {
         CString currentNick = m_pNetwork->GetNick();
-        pcrecpp::RE re(currentNick);
-
-        if(re.error().length() == 0 && re.PartialMatch(sMessage) && channel.IsDetached()) {
-            m_pUser->PutStatusNotice("#" + channel.GetName() + " <" +
+        if(sMessage.AsLower().find(m_pNetwork->GetCurNick().AsLower()) != CString::npos && channel.IsDetached()) {
+            m_pUser->PutStatusNotice(channel.GetName() + " <" +
                 nick.GetNick() + "> " + sMessage);
         }
 
         return CONTINUE;
     }
 };
+
+template<> void TModInfo<CDetachedHighlight>(CModInfo& Info) {
+    Info.SetWikiPage("None");
+    Info.SetHasArgs(false);
+}
 
 MODULEDEFS(CDetachedHighlight, "Forwards notices containing any highlights received in detached channels.")
